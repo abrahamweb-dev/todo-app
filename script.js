@@ -1,53 +1,39 @@
-const words = ["Web Developer", "Frontend Developer", "Freelancer"];
-const roleEl = document.querySelector(".typing-text span");
-const welcomeEl = document.querySelector(".welcome-text span");
-const welcomeMessage = welcomeEl.textContent;
+const taskInput = document.getElementById("taskInput");
+const addBtn = document.getElementById("addBtn");
+const taskList = document.getElementById("taskList");
 
-let wordIndex = 0, charIndex = 0, deleting = false;
+addBtn.addEventListener("click", addTask);
 
-// --- Welcome text: types once, then cycles colors forever ---
-function typeWelcome() {
-  welcomeEl.textContent = "";
-  let i = 0;
-  const interval = setInterval(() => {
-    welcomeEl.textContent += welcomeMessage[i];
-    i++;
-    if (i === welcomeMessage.length) {
-      clearInterval(interval);
-      cycleFlagColors();
-    }
-  }, 80);
-}
+taskInput.addEventListener("keypress", function (e) {
+  if (e.key === "Enter") {
+    addTask();
+  }
+});
 
-function cycleFlagColors() {
-  const colors = ["#009A44", "#FEDD00", "#DA121A"]; // green, yellow, red
-  let colorIndex = 0;
-  setInterval(() => {
-    welcomeEl.style.color = colors[colorIndex];
-    colorIndex = (colorIndex + 1) % colors.length;
-  }, 800);
-}
+function addTask() {
+  const taskText = taskInput.value.trim();
 
-// --- Role text: independent typing loop, unaffected ---
-function typeRole() {
-  const current = words[wordIndex];
-  roleEl.textContent = deleting
-    ? current.substring(0, charIndex--)
-    : current.substring(0, charIndex++);
-
-  let speed = deleting ? 60 : 120;
-
-  if (!deleting && charIndex === current.length + 1) {
-    deleting = true;
-    speed = 1500;
-  } else if (deleting && charIndex === 0) {
-    deleting = false;
-    wordIndex = (wordIndex + 1) % words.length;
-    speed = 300;
+  if (taskText === "") {
+    return;
   }
 
-  setTimeout(typeRole, speed);
-}
+  const li = document.createElement("li");
 
-typeWelcome();
-typeRole();
+  const span = document.createElement("span");
+  span.textContent = taskText;
+  span.addEventListener("click", function () {
+    li.classList.toggle("completed");
+  });
+
+  const deleteBtn = document.createElement("button");
+  deleteBtn.textContent = "✕";
+  deleteBtn.addEventListener("click", function () {
+    li.remove();
+  });
+
+  li.appendChild(span);
+  li.appendChild(deleteBtn);
+  taskList.appendChild(li);
+
+  taskInput.value = "";
+}
